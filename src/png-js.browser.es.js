@@ -208,7 +208,7 @@ var IndexedPNG = function () {
               }
             }();
 
-            this.imgData = new Uint8ClampedArray(this.imgData);
+            this.imgData = new Uint8Array(this.imgData);
             return;
 
           default:
@@ -260,7 +260,7 @@ var IndexedPNG = function () {
       var pixelBytes = this.pixelBitlength / 8;
       var scanlineLength = pixelBytes * this.width;
 
-      var pixels = new Uint8ClampedArray(scanlineLength * this.height);
+      var pixels = new Uint8Array(scanlineLength * this.height);
       var _data = data,
           length = _data.length;
 
@@ -360,7 +360,7 @@ var IndexedPNG = function () {
       var palette = this.palette;
 
       var transparency = this.transparency.indexed || [];
-      var ret = new Uint8ClampedArray(palette.length / 3 * 4);
+      var ret = new Uint8Array(palette.length / 3 * 4);
       var pos = 0;
       var length = palette.length;
 
@@ -380,48 +380,21 @@ var IndexedPNG = function () {
     key: 'toPNGData',
     value: async function toPNGData(options) {
       var palette = options.palette || this.decodedPalette;
-      if (!this.decodedPixels) {
-        await this.decode();
-      }
-      if (options.clip) {
-        // Ensure some sane defaults
-        if (options.clip.x == undefined) options.clip.x = 0;
-        if (options.clip.y == undefined) options.clip.y = 0;
-        if (options.clip.w == undefined) options.clip.w = this.width - options.clip.x;
-        if (options.clip.h == undefined) options.clip.h = this.height - options.clip.y;
-        // Now check for user errors.
-        if (options.clip.x < 0 || options.clip.x >= this.width) throw new Error("clip.x is out of bounds");
-        if (options.clip.y < 0 || options.clip.y >= this.height) throw new Error("clip.y is out of bounds");
-        if (options.clip.w <= 0 || options.clip.w > this.width) throw new Error("clip.w is out of bounds");
-        if (options.clip.h <= 0 || options.clip.h > this.height) throw new Error("clip.h is out of bounds");
-        // Now we can get our clipped array.
-        var pixels = new Uint8ClampedArray(options.clip.w * options.clip.h * 4);
-        for (var x = 0; x < options.clip.w; x++) {
-          for (var y = 0; y < options.clip.h; y++) {
-            var i = (x + y * options.clip.w) * 4;
-            var index = this.decodedPixels[x + options.clip.x + (y + options.clip.y) * this.width] * 4;
-            pixels[i++] = palette[index];
-            pixels[i++] = palette[index + 1];
-            pixels[i++] = palette[index + 2];
-            pixels[i++] = palette[index + 3];
-          }
-        }
-        return { pixels: pixels, width: options.clip.w };
-      } else {
-        // Allocate RGBA buffer
-        var bytes = new Uint8ClampedArray(this.decodedPixels.length * 4);
 
-        var j = 0;
-        for (var _i = 0; _i < this.decodedPixels.length; _i++) {
-          var paletteIdx = this.decodedPixels[_i] * 4;
-          bytes[j++] = palette[paletteIdx]; // R
-          bytes[j++] = palette[paletteIdx + 1]; // G
-          bytes[j++] = palette[paletteIdx + 2]; // B
-          bytes[j++] = palette[paletteIdx + 3]; // A
-        }
+      var length = this.decodedPixels.length;
+      var bytes = new Uint8ClampedArray(length * 4);
+      var pixels = this.decodedPixels;
 
-        return { pixels: bytes, width: this.width };
+      var j = 0;
+      for (var i = 0; i < length; i++) {
+        var paletteIdx = pixels[i] * 4;
+        bytes[j++] = palette[paletteIdx]; // R
+        bytes[j++] = palette[paletteIdx + 1]; // G
+        bytes[j++] = palette[paletteIdx + 2]; // B
+        bytes[j++] = palette[paletteIdx + 3]; // A
       }
+
+      return { pixels: bytes, width: this.width };
     }
   }, {
     key: 'toImageData',

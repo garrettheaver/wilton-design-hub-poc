@@ -44,10 +44,13 @@ export default {
         })
     },
     async setPalette(palette) {
+      var t0 = performance.now();
       this.original.toImageData({
         palette
       })
       .then(png => {
+        var t1 = performance.now();
+        console.log("Render Took: "+(t1-t0)+"msecs");
         this.$refs.canvas.getContext('2d').putImageData(png, 0, 0);
       });
     },

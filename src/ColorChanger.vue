@@ -14,7 +14,7 @@ export default {
             type: Number
         },
         color: {
-            type: Uint8ClampedArray
+            type: Uint8Array
         }
     },
     data() {
