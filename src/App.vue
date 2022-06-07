@@ -35,7 +35,7 @@ export default {
       await this.setPalette(this.original.decodedPalette)
     },
     async loadImage(name) {
-      this.original = await fetch(`/assets/${name}.indexed.png`)
+      this.original = await fetch(`assets/${name}.indexed.png`)
         .then(res => res.arrayBuffer())
         .then(buffer => new IndexedPNG(new Uint8ClampedArray(buffer)))
         .then(png => {
