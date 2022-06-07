@@ -23,16 +23,19 @@ export default {
   components: { ColorChanger },
   data() {
     return {
-      original: ''
+      image: '',
+      palette: []
     }
   },
   methods: {
     async setImage(name) {
-      this.$refs.canvas.getContext('2d').clearRect(0, 0, 9999, 9999);
-      this.original = ''
+      this.$refs.canvas.getContext('2d').clearRect(0, 0, 9999, 9999)
+
+      this.image = ''
+      this.palette = []
       
       await this.loadImage(name)
-      await this.setPalette(this.original.decodedPalette)
+      await this.setPalette(this.image.decodedPalette)
     },
     async loadImage(name) {
       this.original = await fetch(`assets/${name}.indexed.png`)
@@ -40,25 +43,22 @@ export default {
         .then(buffer => new IndexedPNG(new Uint8ClampedArray(buffer)))
         .then(png => {
           png.decode()
+          this.image = png
           return png
         })
     },
-    async setPalette(palette) {
-      var t0 = performance.now();
+    async setPalette(newPalette) {
+      this.palette = newPalette
       this.original.toImageData({
-        palette
+        palette: this.palette
       })
       .then(png => {
         var t1 = performance.now();
-        console.log("Render Took: "+(t1-t0)+"msecs");
-        this.$refs.canvas.getContext('2d').putImageData(png, 0, 0);
+        this.$refs.canvas.getContext('2d').putImageData(png, 0, 0)
       });
     },
-    async swapPalette() {
-      await this.setPalette(this.original.decodedPalette.reverse())
-    },
     onColorChange(newColor) {
-      const newPalette = Uint8ClampedArray.from(this.original.decodedPalette)
+      const newPalette = Uint8Array.from(this.palette)
       const colorOffset = newColor.index * 4
       newPalette[colorOffset] = newColor.color[0]
       newPalette[colorOffset + 1] = newColor.color[1]
@@ -68,13 +68,11 @@ export default {
     }
   },
   computed: {
-    palette() {
-      return this.original?.decodedPalette ?? []
-    },
     colors() {
       const chunks = [];
-      for (let i = 0; i < this.palette.length; i += 4) {
-          chunks.push(this.palette.slice(i, i + 4));
+      const palette = this.palette || []
+      for (let i = 0; i < palette.length; i += 4) {
+          chunks.push(palette.slice(i, i + 4))
       }
       return chunks;
     }
