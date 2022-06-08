@@ -120,7 +120,7 @@ export default {
     }
   },
   async mounted() {
-    await this.setImage('28611-300')
+    await this.setImage('28616-89')
   }
 }
 </script>
