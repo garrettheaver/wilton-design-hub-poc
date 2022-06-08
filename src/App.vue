@@ -6,9 +6,10 @@
     </div>
     <div>
       <div class="images">
-        <button @click="setImage('AC15918')">AC15918</button>
-        <button @click="setImage('AC16054')">AC16054</button>
-        <button @click="setImage('AC16439')">AC16439</button>
+        <label>Image:</label>
+        <select name="image" @change="onSelectImage">
+          <option v-for="name in images" :key="name" :value="name">{{ name }}</option>
+        </select>
       </div>
       <color-changer class="changer" v-for="(color, index) in colors" :key="index" :index="index" :color="color" @colorChange="onColorChange"></color-changer>
     </div>
@@ -24,12 +25,31 @@ export default {
   data() {
     return {
       image: '',
-      palette: []
+      palette: [],
+      images: [
+        'AC15918',
+        'AC16054',
+        'AC16439',
+        '28611-300',
+        '28612-89',
+        '28613-73',
+        '28614-13',
+        '28615-36',
+        '28616-89',
+        '28617-300',
+        '28618-88',
+        '28619-77',
+        '28620-76'
+      ]
     }
   },
   methods: {
+    async onSelectImage(event) {
+      this.setImage(event.target.value)
+    },
     async setImage(name) {
-      this.$refs.canvas.getContext('2d').clearRect(0, 0, 9999, 9999)
+      const context = this.$refs.canvas.getContext('2d')
+      context.clearRect(0, 0, 9999, 9999)
 
       this.image = ''
       this.palette = []
@@ -54,7 +74,8 @@ export default {
       })
       .then(png => {
         var t1 = performance.now();
-        this.$refs.canvas.getContext('2d').putImageData(png, 0, 0)
+        const context = this.$refs.canvas.getContext('2d')
+        context.putImageData(png, 0, 0)
       });
     },
     onColorChange(newColor) {
@@ -92,7 +113,7 @@ export default {
   margin: 10px 0;
 }
 
-.images button {
+.images label {
   margin-right: 5px;
 }
 </style>
