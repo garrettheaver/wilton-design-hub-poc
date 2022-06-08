@@ -90,7 +90,7 @@ export default {
 
         const tiledCanvas = this.$refs.tiled;
         tiledCanvas.height = window.innerHeight;
-        tiledCanvas.width = window.innerWidth;
+        tiledCanvas.width = tiledCanvas.parentElement.clientWidth - 5;
 
         img.onload = function() {
           const context = tiledCanvas.getContext('2d')
@@ -126,23 +126,22 @@ export default {
 </script>
 
 <style>
-html, body {
-  padding: 0;
-  margin: 0;
+body {
+  padding: 0 5px;
 }
 </style>
 
 <style scoped>
+.canvas {
+  margin: 5px 0;
+}
+
 canvas {
   margin: 5px 0;
 }
 
-.controls {
-  padding: 10px;
-}
-
 .selector {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .changer {
