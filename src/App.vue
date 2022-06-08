@@ -2,7 +2,7 @@
   <div class="root">
     <div class="controls">
       <div class="selector">
-        <select name="image" @change="onSelectImage">
+        <select name="image" @change="onSelectImage" v-model="name">
           <option v-for="name in images" :key="name" :value="name">{{ name }}</option>
         </select>
       </div>
@@ -14,7 +14,9 @@
         @colorChange="onColorChange" />
     </div>
     <div class="canvas">
-      <canvas ref="canvas" height="999" width="800">
+      <canvas ref="single">
+      </canvas>
+      <canvas ref="tiled">
       </canvas>
     </div>
   </div>
@@ -28,6 +30,7 @@ export default {
   components: { ColorChanger },
   data() {
     return {
+      name: '',
       image: '',
       palette: [],
       images: [
@@ -52,9 +55,7 @@ export default {
       this.setImage(event.target.value)
     },
     async setImage(name) {
-      const context = this.$refs.canvas.getContext('2d')
-      context.clearRect(0, 0, 9999, 9999)
-
+      this.name = name;
       this.image = ''
       this.palette = []
       
@@ -77,13 +78,28 @@ export default {
         palette: this.palette
       })
       .then(png => {
-        var t1 = performance.now();
-        const context = this.$refs.canvas.getContext('2d')
-        context.putImageData(png, 0, 0)
+        const singleCanvas = this.$refs.single;
+        singleCanvas.width = png.width;
+        singleCanvas.height = png.height;
+
+        const tempContext = singleCanvas.getContext('2d');
+        tempContext.putImageData(png, 0, 0);
+
+        const img = new Image();
+        img.src = singleCanvas.toDataURL('image/png');
+
+        const tiledCanvas = this.$refs.tiled;
+        tiledCanvas.height = window.innerHeight;
+        tiledCanvas.width = window.innerWidth;
+
+        img.onload = function() {
+          const context = tiledCanvas.getContext('2d')
+          context.fillStyle = context.createPattern(img, 'repeat')
+          context.fillRect(0, 0, tiledCanvas.width, tiledCanvas.height)
+        }
       });
     },
     onColorChange(newColor) {
-      console.log(newColor)
       const newPalette = Uint8Array.from(this.palette)
       const colorOffset = newColor.index * 4
       newPalette[colorOffset] = newColor.color[0]
@@ -104,14 +120,21 @@ export default {
     }
   },
   async mounted() {
-    await this.setImage('AC15918')
+    await this.setImage('28611-300')
   }
 }
 </script>
 
+<style>
+html, body {
+  padding: 0;
+  margin: 0;
+}
+</style>
+
 <style scoped>
 .controls {
-  margin-bottom: 10px;
+  padding: 10px;
 }
 
 .selector {

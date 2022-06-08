@@ -1,8 +1,8 @@
 <template>
     <VSwatches v-model="colour"
-        trigger-style="border: 1px black solid"
+        :trigger-style="{ border: '1px black solid' }"
         swatches="text-advanced"
-        show-fallback="true"
+        :show-fallback="true"
         @update:modelValue="onChange" />
 </template>
 
@@ -30,9 +30,7 @@ export default {
     },
     methods: {
         onChange(color) {
-            console.log(color)
             var aRgbHex = color.match(/[^#]{2}/g)
-            console.log(aRgbHex)
             this.$emit('colorChange', {
                 index: this.index,
                 color: [
