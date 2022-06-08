@@ -1,17 +1,21 @@
 <template>
-  <div class="root" style="display: flex">
-    <div>
-      <canvas ref="canvas" height="999" width="800">
-      </canvas>
-    </div>
-    <div>
-      <div class="images">
-        <label>Image:</label>
+  <div class="root">
+    <div class="controls">
+      <div class="selector">
         <select name="image" @change="onSelectImage">
           <option v-for="name in images" :key="name" :value="name">{{ name }}</option>
         </select>
       </div>
-      <color-changer class="changer" v-for="(color, index) in colors" :key="index" :index="index" :color="color" @colorChange="onColorChange"></color-changer>
+      <color-changer class="changer" 
+        v-for="(color, index) in colors" 
+        :key="index" 
+        :index="index" 
+        :color="color" 
+        @colorChange="onColorChange" />
+    </div>
+    <div class="canvas">
+      <canvas ref="canvas" height="999" width="800">
+      </canvas>
     </div>
   </div>
 </template>
@@ -79,6 +83,7 @@ export default {
       });
     },
     onColorChange(newColor) {
+      console.log(newColor)
       const newPalette = Uint8Array.from(this.palette)
       const colorOffset = newColor.index * 4
       newPalette[colorOffset] = newColor.color[0]
@@ -105,15 +110,15 @@ export default {
 </script>
 
 <style scoped>
-.root > div {
-  margin: 0 20px
+.controls {
+  margin-bottom: 10px;
 }
 
-.images, .changer {
-  margin: 10px 0;
+.selector {
+  margin-bottom: 10px;
 }
 
-.images label {
+.changer {
   margin-right: 5px;
 }
 </style>

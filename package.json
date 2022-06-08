@@ -11,7 +11,9 @@
   "dependencies": {
     "pako": "^2.0.4",
     "pngjs": "^6.0.0",
-    "vue": "^3.2.36"
+    "vue": "^3.2.36",
+    "vue-swatches": "^2.1.1",
+    "vue3-swatches": "^1.0.10"
   },
   "devDependencies": {
     "@types/node": "^16.11.36",
