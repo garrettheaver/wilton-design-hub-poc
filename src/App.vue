@@ -133,6 +133,10 @@ html, body {
 </style>
 
 <style scoped>
+canvas {
+  margin: 5px 0;
+}
+
 .controls {
   padding: 10px;
 }
