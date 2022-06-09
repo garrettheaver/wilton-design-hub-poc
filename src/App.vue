@@ -30,7 +30,7 @@
 
 <script>
 import ColorChanger from './ColorChanger.vue'
-import IndexedPNG from './png-js.browser.es'
+import IndexedPNG from './png-js.browser.es.min'
 
 export default {
   components: { ColorChanger },
