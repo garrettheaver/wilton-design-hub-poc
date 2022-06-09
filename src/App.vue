@@ -19,6 +19,12 @@
       <canvas ref="tiled">
       </canvas>
     </div>
+    <div class="visual-tab visual-3d show">
+        <div class="pattern-container room room-1 show">
+          <div class="room-overlay overlay-room-1"></div>
+          <div class="pattern" id="room1_3d_pattern" ref="threeDView"></div>
+        </div>
+      </div>
   </div>
 </template>
 
@@ -89,13 +95,16 @@ export default {
         img.src = singleCanvas.toDataURL('image/png');
 
         const tiledCanvas = this.$refs.tiled;
+        const threeDView = this.$refs.threeDView;
+
         tiledCanvas.height = window.innerHeight;
         tiledCanvas.width = tiledCanvas.parentElement.clientWidth - 5;
 
         img.onload = function() {
           const context = tiledCanvas.getContext('2d')
           context.fillStyle = context.createPattern(img, 'repeat')
-          context.fillRect(0, 0, tiledCanvas.width, tiledCanvas.height)
+          context.fillRect(0, 0, tiledCanvas.width, tiledCanvas.height);
+          threeDView.style = `background-image: url(${tiledCanvas.toDataURL('image/png')})`;
         }
       });
     },
@@ -146,5 +155,63 @@ canvas {
 
 .changer {
   margin-right: 5px;
+}
+
+.visual-tab {
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  height: 380px;
+  z-index: -1;
+}
+
+.visual-tab .pattern-container {
+  border: 1px solid #DFDFDF;
+  height: 430px;
+  overflow: hidden;
+  position: absolute;
+  width: 570px;
+}
+
+.visual-tab.visual-3d .room-1 .overlay-room-1:before {
+  background: url("/assets/room-1-background-shadows.png");
+}
+
+.visual-tab.visual-3d .room-overlay:before {
+  content: '';
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+.visual-tab.visual-3d .room-1 .overlay-room-1:after {
+  background: url("/assets/room-1-background.png") top center no-repeat;
+}
+
+.visual-tab.visual-3d .room-overlay:after {
+  content: '';
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+.visual-tab .room-1 .pattern {
+  -moz-transform: perspective(720px) rotateX(70deg) skewX(4deg) skewY(-20deg);
+  -o-transform: perspective(720px) rotateX(70deg) skewX(4deg) skewY(-20deg);
+  -ms-transform: perspective(720px) rotateX(70deg) skewX(4deg) skewY(-20deg);
+  -webkit-transform: perspective(720px) rotateX(70deg) skewX(4deg) skewY(-20deg);
+  transform: perspective(720px) rotateX(70deg) skewX(4deg) skewY(-20deg);
+  background: #A0A0A0;
+  height: 2860px;
+  margin: -1030px 0px 0px -770px;
+  width: 1590px;
+}
+
+.visual-tab.visual-3d .room-overlay {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 9;
 }
 </style>
