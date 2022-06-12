@@ -6,16 +6,26 @@
           <option v-for="name in images" :key="name" :value="name">{{ name }}</option>
         </select>
       </div>
+      <div>
       <color-changer class="changer" 
         v-for="(color, index) in colors" 
         :key="index" 
         :index="index" 
         :color="color" 
         @colorChange="onColorChange" />
+      </div>
+      <div class="dropper">
+        <label for="useHalfDrop">Use "Half Drop" Tiling</label>
+        <input type="checkbox" id="useHalfDrop" v-model="useHalfDrop" @change="onDropChange">
+      </div>
     </div>
     <div class="canvas">
       <canvas ref="single">
       </canvas>
+      <br />
+      <canvas ref="drop">
+      </canvas>
+      <br />
       <canvas ref="tiled">
       </canvas>
     </div>
@@ -37,6 +47,7 @@ export default {
   data() {
     return {
       name: '',
+      useHalfDrop: false,
       image: '',
       palette: [],
       images: [
@@ -58,7 +69,11 @@ export default {
   },
   methods: {
     async onSelectImage(event) {
-      this.setImage(event.target.value)
+      this.useHalfDrop = false;
+      await this.setImage(event.target.value)
+    },
+    async onDropChange(event) {
+      await this.setPalette(this.palette)
     },
     async setImage(name) {
       this.name = name;
@@ -91,8 +106,20 @@ export default {
         const tempContext = singleCanvas.getContext('2d');
         tempContext.putImageData(png, 0, 0);
 
+        const dropCanvas = this.$refs.drop;
+        dropCanvas.width = png.width * 2;
+        dropCanvas.height = png.height;
+        
+        console.log(this.drop)
+        const dropContext = dropCanvas.getContext('2d');
+        dropContext.putImageData(png, 0, 0);
+
+        const dropHeight = this.useHalfDrop ? png.height / 2 : 0;
+        dropContext.putImageData(png, png.width, -dropHeight);
+        dropContext.putImageData(png, png.width, dropHeight);
+
         const img = new Image();
-        img.src = singleCanvas.toDataURL('image/png');
+        img.src = dropCanvas.toDataURL('image/png');
 
         const tiledCanvas = this.$refs.tiled;
         const threeDView = this.$refs.threeDView;
@@ -153,7 +180,11 @@ canvas {
   margin-bottom: 15px;
 }
 
-.changer {
+.dropper {
+  margin: 5px 0;
+}
+
+.changer, .dropper label {
   margin-right: 5px;
 }
 
