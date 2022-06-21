@@ -18,9 +18,13 @@
         <label for="useHalfDrop">Use "Half Drop" Tiling</label>
         <input type="checkbox" id="useHalfDrop" v-model="useHalfDrop" @change="onOptChange">
       </div>
-      <div class="texture">
+      <div class="dropper">
         <label for="useTexture">Use Carpet "Texture" Mapping</label>
         <input type="checkbox" id="useTexture" v-model="useTexture" @change="onOptChange">
+      </div>
+      <div class="dropper">
+        <label for="useTextureFile">Custom "Texture"</label>
+        <input type="file" @change="setTexture" accept="image/*">
       </div>
     </div>
     <div class="canvas">
@@ -165,6 +169,25 @@ export default {
           this.texture.src = "assets/texture.png"
           this.texture.onload = function () {
             resolve()
+          }
+      })
+    },
+    async setTexture(event) {
+      return new Promise((resolve, reject) => {
+          const file = event.target.files[0]
+          const reader = new FileReader()
+
+          this.texture = new Image()
+          const image = this.texture
+          const onOptChange = this.onOptChange
+
+          reader.readAsDataURL(file)
+          reader.onload = function() {
+            image.src = reader.result
+            image.onload = async function () {
+              await onOptChange()
+              resolve()
+            }
           }
       })
     },
